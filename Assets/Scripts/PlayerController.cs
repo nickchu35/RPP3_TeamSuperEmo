@@ -4,6 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 
 public class PlayerController : MonoBehaviour {
+
 	public float _raycastLength = 10f;
 	public Transform _pickupHolder;
 	public float _pickupSpeed = 0.5f;
@@ -14,6 +15,8 @@ public class PlayerController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		GameObject _uiCam = GameObject.FindGameObjectWithTag ("UICamera");
+		_uiCam.gameObject.SetActive (false);
 		
 	}
 	
@@ -27,21 +30,29 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void CheckRaycast(){
-		Ray raycast = Camera.main.ScreenPointToRay (Input.mousePosition);
-		if (Physics.Raycast(raycast, out _hit, _raycastLength)){
+		// Debug.Log (Input.mousePosition);
+		//Ray raycast = Camera.main.ScreenPointToRay (Input.mousePosition);
+		Debug.DrawRay (Camera.main.transform.position, Camera.main.transform.forward * 10, Color.black);
+
+		//if (Physics.Raycast(raycast, out _hit, _raycastLength)){
+		Debug.Log(Camera.main.transform.forward);
+
+		if(Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out _hit, _raycastLength)){
 			if (_hit.collider.gameObject.tag == "Pickup"){
-				if (Input.GetKeyUp(KeyCode.Mouse0)){
+				//if (Input.GetKeyUp(KeyCode.Mouse0)){
+				if(Input.GetButtonUp("Fire1")){
 					if (_hit.collider.gameObject != this._pickup) {
 						this.PickupItem ();
 					} else {
 						this._pickup = null;
-						this._updatePickup = false;
+						this._updatePickup = false; 
 					}
 					// activate UI?
 				}
 			}
 		}
 	}
+
 	private void PickupItem(){
 		Debug.Log("Pickup!");
 		this._pickup = _hit.collider.gameObject;

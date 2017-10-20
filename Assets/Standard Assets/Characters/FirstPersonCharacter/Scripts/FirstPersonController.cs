@@ -19,6 +19,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         [SerializeField] private float m_StickToGroundForce;
         [SerializeField] private float m_GravityMultiplier;
         [SerializeField] private MouseLook m_MouseLook;
+
         [SerializeField] private bool m_UseFovKick;
         [SerializeField] private FOVKick m_FovKick = new FOVKick();
         [SerializeField] private bool m_UseHeadBob;
@@ -43,13 +44,11 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private bool m_Jumping;
         private AudioSource m_AudioSource;
 
+		public Transform _childCamTrans;
+
         // Use this for initialization
         private void Start()
         {
-			// disable the UI camera
-			GameObject _uiCam = GameObject.FindGameObjectWithTag("UICamera");
-			_uiCam.SetActive (false);
-
             m_CharacterController = GetComponent<CharacterController>();
             m_Camera = Camera.main;
             m_OriginalCameraPosition = m_Camera.transform.localPosition;
@@ -96,13 +95,16 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_NextStep = m_StepCycle + .5f;
         }
 
-
         private void FixedUpdate()
         {
+			// this.AdjustToOVRCam ();
+
             float speed;
             GetInput(out speed);
             // always move along the camera forward as it is the direction that it being aimed at
-            Vector3 desiredMove = transform.forward*m_Input.y + transform.right*m_Input.x;
+
+            // Vector3 desiredMove = transform.forward*m_Input.y + transform.right*m_Input.x; //original 
+			Vector3 desiredMove = _childCamTrans.forward*m_Input.y + _childCamTrans.right*m_Input.x; // OVR
 
             // get a normal for the surface that is being touched to move along it
             RaycastHit hitInfo;
@@ -138,6 +140,13 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_MouseLook.UpdateCursorLock();
         }
 
+		//private void AdjustToOVRCam(){
+			//Debug.Log (m_Camera.transform.rotation.y*10);
+			//Quaternion newRot = _trans.rotation;
+			//newRot.y = m_Camera.transform.rotation.y;
+			//_trans.rotation = newRot;
+			//Debug.Log (_trans.rotation.y*10);
+		//}
 
         private void PlayJumpSound()
         {
